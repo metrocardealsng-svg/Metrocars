@@ -13,6 +13,12 @@ const $ = (s,r=document)=>r.querySelector(s);
 const $$ = (s,r=document)=>[...r.querySelectorAll(s)];
 const money = n=>'₦'+n.toLocaleString('en-NG');
 const title = v=>`${v.make} ${v.model}${v.year?' '+v.year:''}`;
+// Build navigation and filters from the same inventory as the cards.
+$('.nav-link span').textContent=String(vehicles.length).padStart(2,'0');
+for(const [id,key,label] of [['makeFilter','make','All makes'],['conditionFilter','condition','Any condition']]){
+ const select=$('#'+id);select.replaceChildren(new Option(label,'all'));
+ [...new Set(vehicles.map(v=>v[key]))].sort().forEach(value=>select.add(new Option(value,value)));
+}
 let saved;
 try {const raw=JSON.parse(localStorage.getItem('metro-saved')||'[]');saved=new Set(Array.isArray(raw)?raw.filter(id=>vehicles.some(v=>v.id===id)):[]);} catch {saved=new Set();}
 let activeType='all', toastTimer;
@@ -62,10 +68,13 @@ function initMotion(){
  gsap.registerPlugin(ScrollTrigger);
  window.metroMotionActive=true;
  const canvas=$('#heroFrames'),ctx=canvas.getContext('2d',{alpha:false});
- const total=241,frames=new Array(total),head={progress:0};let rendered=-1,requested=0,loaded=0;
+ // Bound decoded-image memory on phones; preserve the complete 360-degree arc.
+ const frameStep=matchMedia('(max-width:640px)').matches?4:2;
+ const total=240/frameStep+1,frames=new Array(total),head={progress:0};let rendered=-1,requested=0,loaded=0;
  function draw(){if(playing)return;const n=Math.min(total-1,Math.round(head.progress*(total-1)));requested=n;let image=frames[n];if(!image){for(let step=1;step<total;step++){if(frames[n-step]){image=frames[n-step];break;}if(frames[n+step]){image=frames[n+step];break;}}}if(!image)return;if(rendered===image.dataset.index)return;rendered=image.dataset.index;canvas.width=image.naturalWidth;canvas.height=image.naturalHeight;ctx.drawImage(image,0,0);window.metroCanvasReady=true;canvas.style.opacity='1';}
- const queue=[0,60,120,180,240,...Array.from({length:total},(_,i)=>i).filter(i=>i%60!==0)];let cursor=0;
- async function loadNext(){if(cursor>=queue.length)return;const i=queue[cursor++],img=new Image();img.decoding='async';img.dataset.index=String(i);img.src=`assets/frames/${String(i+1).padStart(4,'0')}.webp`;try{await img.decode();frames[i]=img;loaded++;if(i===0||Math.abs(requested-i)<4)draw();}catch{}if(loaded===total)draw();loadNext();}
+ const keyframes=[0,Math.round((total-1)/4),Math.round((total-1)/2),Math.round(3*(total-1)/4),total-1];
+ const queue=[...keyframes,...Array.from({length:total},(_,i)=>i).filter(i=>!keyframes.includes(i))];let cursor=0;
+ async function loadNext(){if(cursor>=queue.length||reducedMotion.matches)return;const i=queue[cursor++],img=new Image();img.decoding='async';img.dataset.index=String(i);img.src=`assets/frames/${String(i*frameStep+1).padStart(4,'0')}.webp`;try{await img.decode();frames[i]=img;loaded++;if(i===0||Math.abs(requested-i)<4)draw();}catch{}if(loaded===total)draw();loadNext();}
  for(let i=0;i<4;i++)loadNext();
  function motionUpdate(){if(playing)return;const p=head.progress;updateProgress(p);showScene(p<.35?0:p<.7?1:2);draw();if(!window.metroCanvasReady&&video.duration){targetTime=p*(video.duration-.06);seek();}}
  window.metroRefreshMotion=motionUpdate;
