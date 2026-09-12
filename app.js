@@ -85,7 +85,7 @@ function initMotion(){
  let cardTriggers=[];
  window.metroCardsMotion=()=>{cardTriggers.forEach(t=>t.kill());cardTriggers=[];$$('.vehicle-card').forEach((card,i)=>{const anim=gsap.fromTo(card,{y:35,opacity:.4},{y:0,opacity:1,duration:.65,ease:'power2.out',scrollTrigger:{trigger:card,start:'top 97%',once:true}});cardTriggers.push(anim.scrollTrigger);});ScrollTrigger.refresh();};
  window.metroCardsMotion();
- if(matchMedia('(pointer:fine)').matches){$('#vehicleGrid').addEventListener('pointermove',e=>{const c=e.target.closest('.vehicle-visual');if(!c)return;const r=c.getBoundingClientRect();gsap.to(c,{rotateY:(e.clientX-r.left-r.width/2)/r.width*5,rotateX:-(e.clientY-r.top-r.height/2)/r.height*5,duration:.45,ease:'power2.out',transformPerspective:800});});$('#vehicleGrid').addEventListener('pointerleave',()=>gsap.to('.vehicle-visual',{rotateX:0,rotateY:0,duration:.5}));}
+ if(matchMedia('(pointer:fine)').matches)gsap.set('.vehicle-visual',{rotateX:0,rotateY:0,clearProps:'transformPerspective'});
  reducedMotion.addEventListener('change',()=>{if(reducedMotion.matches){ScrollTrigger.getAll().forEach(t=>t.kill());gsap.set(['.vehicle-card','.enquiry-form','.glass-orbit'],{clearProps:'all'});window.metroMotionActive=false;window.metroCanvasReady=false;canvas.style.opacity='0';updateScroll();}});
 }
 
