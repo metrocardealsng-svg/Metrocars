@@ -42,6 +42,14 @@ $('#enquiryForm').addEventListener('submit',e=>{e.preventDefault();const name=$(
 $('#copyEnquiry').addEventListener('click',async()=>{const box=$('#preparedMessage');try{if(!navigator.clipboard)throw new Error('Clipboard unavailable');await navigator.clipboard.writeText(box.value);$('#copyStatus').textContent='Copied. Your WhatsApp enquiry links are ready.';$('#copyEnquiry').innerHTML='Enquiry copied <span>✓</span>';}catch{box.focus();box.select();$('#copyStatus').textContent='Your message is selected. Use Copy on your device, then continue to WhatsApp.';}});
 const reducedMotion=window.matchMedia('(prefers-reduced-motion: reduce)');
 const video=$('#heroVideo'),hero=$('.hero'),scenes=$$('[data-scene]');let playing=false,scheduled=false,targetTime=0,currentScene=-1;
+const chapters=[
+ {index:'01 / THE REVEAL',title:'Built for the<br>next move.'},
+ {index:'02 / ASCEND',title:'Go beyond<br>the ordinary.'},
+ {index:'03 / SELECT',title:'The city is<br>your showroom.'},
+ {index:'04 / DRIVE',title:'Your road.<br>Your rules.'},
+ {index:'05 / ARRIVE',title:'See it.<br>Make it yours.'}
+];
+function sceneForProgress(p){return p<.19?0:p<.38?1:p<.63?2:p<.84?3:4;}
 function showScene(index){
  if(currentScene===index)return;
  currentScene=index;
@@ -51,16 +59,19 @@ function showScene(index){
   scene.hidden=!active;
   scene.inert=!active;
   scene.setAttribute('aria-hidden',String(!active));
-  scene.classList.toggle('scene-active',active);
+ scene.classList.toggle('scene-active',active);
  });
+ const chapter=chapters[index];
+ if(chapter){$('#chapterIndex').textContent=chapter.index;$('#chapterTitle').innerHTML=chapter.title;}
+ $$('.chapter-rail span').forEach((item,i)=>item.classList.toggle('active',i===index));
  $('.glass-orbit').hidden=index===1;
 }
-function updateProgress(p){$('#angleLabel').textContent=`${String(Math.round(p*360)).padStart(3,'0')}°`;$('#filmProgress').style.width=`${p*100}%`;}
+function updateProgress(p){const seconds=Math.round(p*52);$('#angleLabel').textContent=`00:${String(seconds).padStart(2,'0')}`;$('#filmProgress').style.width=`${p*100}%`;}
 function seek(){if(!video.seeking&&video.readyState>=1&&Number.isFinite(targetTime)&&Math.abs(video.currentTime-targetTime)>.035)video.currentTime=targetTime;}
-function updateScroll(){scheduled=false;if(playing||window.metroMotionActive)return;const r=hero.getBoundingClientRect();let p=Math.max(0,Math.min(1,-r.top/Math.max(1,hero.offsetHeight-$('.hero-stage').offsetHeight)));if(reducedMotion.matches)p=0;showScene(p<.35?0:p<.7?1:2);updateProgress(p);if(video.duration&&!reducedMotion.matches){targetTime=p*Math.max(0,video.duration-.06);if(!window.metroCanvasReady)seek();}}
+function updateScroll(){scheduled=false;if(playing||window.metroMotionActive)return;const r=hero.getBoundingClientRect();let p=Math.max(0,Math.min(1,-r.top/Math.max(1,hero.offsetHeight-$('.hero-stage').offsetHeight)));if(reducedMotion.matches)p=0;showScene(sceneForProgress(p));updateProgress(p);if(video.duration&&!reducedMotion.matches){targetTime=p*Math.max(0,video.duration-.06);if(!window.metroCanvasReady)seek();}}
 window.addEventListener('scroll',()=>{if(!scheduled){scheduled=true;requestAnimationFrame(updateScroll);}}, {passive:true});window.addEventListener('resize',updateScroll);video.addEventListener('loadedmetadata',updateScroll);video.addEventListener('seeked',()=>{if(!playing&&!window.metroCanvasReady)seek();});
 function stopFilm(){playing=false;$('#heroFrames').style.opacity=window.metroCanvasReady?'1':'0';video.pause();$('#playReveal').textContent='▶ Play film';$('#playReveal').setAttribute('aria-pressed','false');updateScroll();if(window.metroRefreshMotion)window.metroRefreshMotion();}
-$('#playReveal').addEventListener('click',async()=>{if(playing){stopFilm();return;}try{playing=true;$('#heroFrames').style.opacity='0';video.currentTime=0;await video.play();$('#playReveal').textContent='Ⅱ Pause film';$('#playReveal').setAttribute('aria-pressed','true');showScene(0);}catch{playing=false;notify('The film could not play. Please try again.');}});video.addEventListener('ended',stopFilm);video.addEventListener('timeupdate',()=>{if(playing&&video.duration){const p=video.currentTime/video.duration;updateProgress(p);showScene(p<.35?0:p<.7?1:2);}});reducedMotion.addEventListener('change',()=>{stopFilm();updateScroll();});
+$('#playReveal').addEventListener('click',async()=>{if(playing){stopFilm();return;}try{playing=true;$('#heroFrames').style.opacity='0';video.currentTime=0;await video.play();$('#playReveal').textContent='Ⅱ Pause film';$('#playReveal').setAttribute('aria-pressed','true');showScene(0);}catch{playing=false;notify('The film could not play. Please try again.');}});video.addEventListener('ended',stopFilm);video.addEventListener('timeupdate',()=>{if(playing&&video.duration){const p=video.currentTime/video.duration;updateProgress(p);showScene(sceneForProgress(p));}});reducedMotion.addEventListener('change',()=>{stopFilm();updateScroll();});
 document.addEventListener('visibilitychange',()=>{if(document.hidden&&playing)stopFilm();});
 $('#year').textContent=new Date().getFullYear();render();updateScroll();initMotion();
 function initMotion(){
@@ -69,14 +80,14 @@ function initMotion(){
  window.metroMotionActive=true;
  const canvas=$('#heroFrames'),ctx=canvas.getContext('2d',{alpha:false});
  // Bound decoded-image memory on phones; preserve the complete 360-degree arc.
- const frameStep=matchMedia('(max-width:640px)').matches?4:2;
+ const frameStep=4;
  const total=240/frameStep+1,frames=new Array(total),head={progress:0};let rendered=-1,requested=0,loaded=0;
  function draw(){if(playing)return;const n=Math.min(total-1,Math.round(head.progress*(total-1)));requested=n;let image=frames[n];if(!image){for(let step=1;step<total;step++){if(frames[n-step]){image=frames[n-step];break;}if(frames[n+step]){image=frames[n+step];break;}}}if(!image)return;if(rendered===image.dataset.index)return;rendered=image.dataset.index;canvas.width=image.naturalWidth;canvas.height=image.naturalHeight;ctx.drawImage(image,0,0);window.metroCanvasReady=true;canvas.style.opacity='1';}
  const keyframes=[0,Math.round((total-1)/4),Math.round((total-1)/2),Math.round(3*(total-1)/4),total-1];
  const queue=[...keyframes,...Array.from({length:total},(_,i)=>i).filter(i=>!keyframes.includes(i))];let cursor=0;
  async function loadNext(){if(cursor>=queue.length||reducedMotion.matches)return;const i=queue[cursor++],img=new Image();img.decoding='async';img.dataset.index=String(i);img.src=`assets/frames/${String(i*frameStep+1).padStart(4,'0')}.webp`;try{await img.decode();frames[i]=img;loaded++;if(i===0||Math.abs(requested-i)<4)draw();}catch{}if(loaded===total)draw();loadNext();}
  for(let i=0;i<4;i++)loadNext();
- function motionUpdate(){if(playing)return;const p=head.progress;updateProgress(p);showScene(p<.35?0:p<.7?1:2);draw();if(!window.metroCanvasReady&&video.duration){targetTime=p*(video.duration-.06);seek();}}
+ function motionUpdate(){if(playing)return;const p=head.progress;updateProgress(p);showScene(sceneForProgress(p));draw();if(!window.metroCanvasReady&&video.duration){targetTime=p*(video.duration-.06);seek();}}
  window.metroRefreshMotion=motionUpdate;
  const scroll=gsap.to(head,{progress:1,ease:'none',onUpdate:motionUpdate,scrollTrigger:{trigger:hero,start:()=>hero.offsetTop,end:()=>hero.offsetTop+hero.offsetHeight-$('.hero-stage').offsetHeight,scrub:.65,invalidateOnRefresh:true}});
  gsap.fromTo('.glass-orbit',{y:60,rotateY:-12,rotateX:6,opacity:.4},{y:-70,rotateY:9,rotateX:-3,opacity:1,ease:'none',scrollTrigger:{trigger:hero,start:()=>hero.offsetTop,end:()=>hero.offsetTop+hero.offsetHeight-$('.hero-stage').offsetHeight,scrub:1.1}});

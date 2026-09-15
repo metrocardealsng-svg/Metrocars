@@ -56,3 +56,31 @@ footer{display:flex;padding:34px var(--pad);border-top:1px solid var(--line);ali
 @media(max-width:640px){.detail-art.detail-photos{grid-template-columns:1fr}.vehicle-visual:has(.vehicle-photo){aspect-ratio:3/4}}
 
 .location-line address{font-style:normal;font-size:16px;line-height:1.7;color:#d3d2d5;margin-top:10px;overflow-wrap:break-word}
+
+/* Cinematic journey: the supplied brand film becomes a five-chapter scroll world. */
+.header{position:fixed;background:linear-gradient(#0b0b0de8,#0b0b0d33);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.hero{height:520svh}
+.hero-shade{z-index:1;background:linear-gradient(90deg,#050507cf 0%,#07070970 31%,transparent 70%),linear-gradient(0deg,#0b0b0d 0%,transparent 28%,transparent 72%,#08080999)}
+.cinema-grain{position:absolute;inset:-50%;z-index:2;pointer-events:none;opacity:.05;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.8'/%3E%3C/svg%3E");animation:grain .28s steps(2) infinite}
+@keyframes grain{0%{transform:translate(0)}25%{transform:translate(2%,-3%)}50%{transform:translate(-3%,2%)}75%{transform:translate(3%,4%)}100%{transform:translate(-2%,-1%)}}
+.hero-copy-two,.hero-copy-three,.hero-copy-four,.hero-copy-five{opacity:0;transform:translateY(18px);pointer-events:none;top:24%}
+.hero-copy-two,.hero-copy-four{left:auto;right:var(--pad);text-align:right}
+.hero-copy-two .eyebrow,.hero-copy-four .eyebrow{justify-content:flex-end}
+.hero-copy-two h2 span,.hero-copy-three h2 span,.hero-copy-four h2 span,.hero-copy-five h2 span{color:#eee}
+.hero-copy-four{top:28%}.hero-copy-five{top:23%}
+.hero-bottom,.hero-disclaimer{z-index:4}
+.chapter-rail{position:absolute;left:var(--pad);right:var(--pad);bottom:18px;display:flex;gap:25px;z-index:4;font-size:7px;letter-spacing:1.4px;text-transform:uppercase;color:#76767e}
+.chapter-rail span{position:relative}.chapter-rail span.active{color:#fff}.chapter-rail span.active:before{content:'';position:absolute;left:0;right:0;top:-7px;height:1px;background:var(--red)}
+.hero-disclaimer{max-width:390px;text-align:right}
+@media(max-width:640px){
+ .hero{height:440svh}
+ .hero-video{object-fit:cover;width:100%;height:100%;left:0;top:0;object-position:center}
+ .hero-shade{background:linear-gradient(0deg,#0b0b0d 0%,#0b0b0d55 30%,transparent 58%,#070707d8 88%),linear-gradient(90deg,#07070799,transparent 85%)}
+ .hero-copy-two,.hero-copy-four{text-align:left}
+ .hero-copy-two .eyebrow,.hero-copy-four .eyebrow{justify-content:flex-start}
+ .hero-copy,.hero-copy-two,.hero-copy-three,.hero-copy-four,.hero-copy-five{top:105px;left:22px;right:22px;max-width:none}
+ .chapter-rail{left:22px;right:auto;bottom:35px;gap:13px}
+ .chapter-rail span{display:none}.chapter-rail span.active{display:block}
+ .hero-disclaimer{bottom:32px;right:22px;font-size:7px;max-width:55%}
+}
+@media(prefers-reduced-motion:reduce){.cinema-grain{animation:none}.hero{height:auto;min-height:740px}.chapter-rail{display:none}}
