@@ -1,0 +1,28 @@
+/* Site integration only. The registered shader and its parameters are unchanged. */
+#metro-background { position: fixed; inset: 0; z-index: 0; pointer-events: none; background: #030305; }
+#metro-background .shader-frame { width: 100%; height: 100%; }
+#metro-background iframe { pointer-events: none; }
+#pre, #fg-sky, .word-fb, .hero-side, .glow, #grain, #vignette { display: none !important; }
+.card-fr { background: #08060c !important; overflow: hidden; }
+.peek-fr { background-image: linear-gradient(180deg, transparent, #03060977), url('assets/hero-poster.jpg'); }
+.hero { padding-bottom: 70px; }
+.sec::before { background: radial-gradient(110% 62% at 30% 50%, #04070a99, #04070a55 50%, transparent); }
+.page { padding-bottom: calc(180px + env(safe-area-inset-bottom, 0px)); }
+.metro-glass-dock { bottom: calc(12px + env(safe-area-inset-bottom, 0px)) !important; }
+#hf-watermark { bottom: calc(160px + env(safe-area-inset-bottom, 0px)) !important; }
+.metro-cta-mount { width: 280px; max-width: 100%; flex: none; }
+#eternity .metro-cta-mount { margin: 40px auto 0; }
+.metro-glass-contact, .metro-glass-dock .metro-glass-contact {
+  display: block !important; width: 280px; max-width: 100%; height: 72px;
+  padding: 0 !important; background: transparent !important; border-radius: 999px;
+  transition: transform .3s, box-shadow .3s;
+}
+.metro-glass-contact .shader-frame { height: 100%; overflow: hidden; border-radius: inherit; }
+.metro-glass-contact iframe { pointer-events: none; border-radius: inherit; }
+.metro-glass-contact:hover { transform: scale(1.05); box-shadow: 0 0 40px 8px rgba(129,140,248,.35); }
+.metro-glass-contact:focus-visible { outline: 2px solid #a5b4fc; outline-offset: 4px; }
+@media(max-width:700px) {
+  .metro-glass-dock { display: grid !important; grid-template-columns: 1fr 1fr; width: min(340px, calc(100% - 20px)) !important; }
+  .metro-glass-dock .metro-cta-mount { grid-column: 1 / -1; justify-self: center; }
+  .metro-glass-dock a, .metro-glass-dock button { min-height: 44px !important; font-size: 10px !important; letter-spacing: .04em !important; }
+}
