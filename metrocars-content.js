@@ -19,7 +19,7 @@
   const whatsapp = "https://wa.me/2349030914429?text=" + encodeURIComponent(
     "Hi Metro, I just explored the cinematic showroom. I’m ready to discuss my next car."
   );
-  const branchAssets = "https://cdn.jsdelivr.net/gh/metrocardealsng-svg/Metrocars@rebuild/kage-metrocars/";
+  const branchAssets = "./";
   const external = (anchor, url) => {
     anchor.href = url;
     anchor.target = "_blank";
