@@ -57,6 +57,9 @@ footer{display:flex;padding:34px var(--pad);border-top:1px solid var(--line);ali
 
 .location-line address{font-style:normal;font-size:16px;line-height:1.7;color:#d3d2d5;margin-top:10px;overflow-wrap:break-word}
 
+/* Decorative cinema layers never intercept navigation or calls to action. */
+.hero-shade,.cinema-grain,.chapter-rail,.hero-disclaimer{pointer-events:none}
+
 /* Cinematic journey: the supplied brand film becomes a five-chapter scroll world. */
 .header{position:fixed;background:linear-gradient(#0b0b0de8,#0b0b0d33);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
 .hero{height:520svh}
@@ -74,7 +77,7 @@ footer{display:flex;padding:34px var(--pad);border-top:1px solid var(--line);ali
 .hero-disclaimer{max-width:390px;text-align:right}
 @media(max-width:640px){
  .hero{height:440svh}
- .hero-video{object-fit:cover;width:100%;height:100%;left:0;top:0;object-position:center}
+ .hero-video{inset:auto;object-fit:cover;object-position:center;width:142vw;height:80vw;left:-21vw;top:44%;transform:translateY(-10%)}
  .hero-shade{background:linear-gradient(0deg,#0b0b0d 0%,#0b0b0d55 30%,transparent 58%,#070707d8 88%),linear-gradient(90deg,#07070799,transparent 85%)}
  .hero-copy-two,.hero-copy-four{text-align:left}
  .hero-copy-two .eyebrow,.hero-copy-four .eyebrow{justify-content:flex-start}
